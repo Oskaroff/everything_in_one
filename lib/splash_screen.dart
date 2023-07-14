@@ -19,8 +19,11 @@ class _SplashScreenWidgetState extends State<SplashScreenWidget> {
     await Future.delayed(const Duration(seconds: 3));
 
     final navigator = Navigator.of(context);
-    navigator.push(MaterialPageRoute(
-        builder: (BuildContext context) => const MainScreenWidget()));
+    navigator.push(
+      MaterialPageRoute(
+        builder: (BuildContext context) => const MainScreenWidget(),
+      ),
+    );
   }
 
   @override
@@ -53,6 +56,7 @@ class _SplashScreenWidgetState extends State<SplashScreenWidget> {
               Text(
                 "Everything in ONE",
                 style: TextStyle(
+                    letterSpacing: 8,
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.white),
