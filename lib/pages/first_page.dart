@@ -1,5 +1,4 @@
 import 'package:everything_in_one/model/warrior_game_state.dart';
-import 'package:everything_in_one/pages/third_page.dart';
 import 'package:everything_in_one/widget/team_warrior.dart';
 import 'package:flutter/material.dart';
 
@@ -41,6 +40,10 @@ class _FirstPageState extends State<FirstPage> {
               listOfLoser: state.listOfLoser,
               listOfWinner: state.listOfWinner,
               isGameFinished: state.isGameFinished,
+              onPressed: () {
+                state = WarriorGameState();
+                onPressed();
+              },
             )
           : _WarriorGameInitWidget(onPressed: onPressed),
     );
@@ -97,6 +100,7 @@ class PreparingWarriorsBattleWidget extends StatelessWidget {
   final List<Warrior> listOfLoser;
   final List<Warrior> listOfWinner;
   final bool isGameFinished;
+  final VoidCallback? onPressed;
 
   const PreparingWarriorsBattleWidget({
     super.key,
@@ -105,6 +109,7 @@ class PreparingWarriorsBattleWidget extends StatelessWidget {
     required this.listOfLoser,
     required this.listOfWinner,
     required this.isGameFinished,
+    required this.onPressed,
   });
 
   @override
@@ -120,6 +125,7 @@ class PreparingWarriorsBattleWidget extends StatelessWidget {
                 if (isGameFinished)
                   WinnerWidget(
                     listOfWinner: listOfWinner,
+                    onPressed: onPressed,
                   )
                 else
                   Row(
@@ -183,28 +189,27 @@ class PreparingWarriorsBattleWidget extends StatelessWidget {
 
 class WinnerWidget extends StatelessWidget {
   final List<Warrior> listOfWinner;
+  final VoidCallback? onPressed;
+
   const WinnerWidget({
     super.key,
     required this.listOfWinner,
+    required this.onPressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    void navigateToPreparingBattle() {
-      final navigator = Navigator.of(context);
-      navigator.pushReplacement(
-          MaterialPageRoute(builder: (_) => const FirstPage()));
-    }
-
+    final firstWinner = listOfWinner[0];
     return Column(
       children: [
         Column(
           children: [
             Text(
-                "The winner is ${listOfWinner[0].name} from ${listOfWinner[0].team}"),
+              "The winner is ${firstWinner.name} from ${firstWinner.team}",
+            ),
             TeamWarriorWidget(
-              warrior: listOfWinner[0],
-              colorTeam: listOfWinner[0].team == "Team A"
+              warrior: firstWinner,
+              colorTeam: firstWinner.team == "Team A"
                   ? const Color.fromRGBO(217, 217, 217, 1)
                   : const Color.fromRGBO(254, 214, 214, 1),
             ),
@@ -220,13 +225,14 @@ class WinnerWidget extends StatelessWidget {
             foregroundColor: MaterialStateProperty.all(Colors.black),
             shape: MaterialStateProperty.all(
               RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  side: const BorderSide(
-                    color: Colors.black,
-                  )),
+                borderRadius: BorderRadius.circular(10),
+                side: const BorderSide(
+                  color: Colors.black,
+                ),
+              ),
             ),
           ),
-          onPressed: navigateToPreparingBattle,
+          onPressed: onPressed,
           child: const Text("Play again?"),
         ),
       ],
