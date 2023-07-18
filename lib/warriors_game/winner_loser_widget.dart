@@ -1,6 +1,6 @@
 // import 'package:everything_in_one/warriors_game/preparing_warrios_battle.dart';
 // import 'package:flutter/material.dart';
-//
+
 // class BattleWinnerWidget extends StatelessWidget {
 //   List<Warrior> listOfWinner;
 //   List<Warrior> listOfLoser;
@@ -11,20 +11,20 @@
 //     required this.listOfWinner,
 //     required this.winnerTeam,
 //   });
-//
+
 //   @override
 //   Widget build(BuildContext context) {
 //     var listWidgets = <Widget>[];
 //     var name = listOfWinner[0].name;
 //     var health = listOfWinner[0].health;
-//
+
 //     void navigateToPreparingBattle() {
 //       final navigator = Navigator.of(context);
 //       navigator.push(MaterialPageRoute(
 //           builder: (BuildContext context) =>
 //               const PreparingWarriosBattleWidget()));
 //     }
-//
+
 //     for (var element in listOfLoser) {
 //       var ownWidget = TeamWidget(
 //         warrior: element,
@@ -32,7 +32,7 @@
 //       );
 //       listWidgets.add(ownWidget);
 //     }
-//
+
 //     return Scaffold(
 //       body: SafeArea(
 //         child: Container(
@@ -93,4 +93,3 @@
 //     );
 //   }
 // }
-//
