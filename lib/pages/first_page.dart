@@ -1,4 +1,5 @@
 import 'package:everything_in_one/model/warrior_game_state.dart';
+import 'package:everything_in_one/pages/third_page.dart';
 import 'package:everything_in_one/widget/team_warrior.dart';
 import 'package:flutter/material.dart';
 
@@ -38,6 +39,7 @@ class _FirstPageState extends State<FirstPage> {
               teamA: state.teamA,
               teamB: state.teamB,
               listOfLoser: state.listOfLoser,
+              listOfWinner: state.listOfWinner,
               isGameFinished: state.isGameFinished,
             )
           : _WarriorGameInitWidget(onPressed: onPressed),
@@ -93,6 +95,7 @@ class PreparingWarriorsBattleWidget extends StatelessWidget {
   final List<Warrior> teamA;
   final List<Warrior> teamB;
   final List<Warrior> listOfLoser;
+  final List<Warrior> listOfWinner;
   final bool isGameFinished;
 
   const PreparingWarriorsBattleWidget({
@@ -100,6 +103,7 @@ class PreparingWarriorsBattleWidget extends StatelessWidget {
     required this.teamA,
     required this.teamB,
     required this.listOfLoser,
+    required this.listOfWinner,
     required this.isGameFinished,
   });
 
@@ -107,60 +111,125 @@ class PreparingWarriorsBattleWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            SizedBox(height: 30),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.start,
+        child: SizedBox(
+          width: double.infinity,
+          child: SingleChildScrollView(
+            child: Column(
               children: [
-                Column(
-                  children: [
-                    const Text("Team A"),
-                    ...teamA.map(
-                      (e) => TeamWarriorWidget(
-                        warrior: e,
-                        colorTeam: const Color.fromRGBO(217, 217, 217, 1),
+                const SizedBox(height: 20),
+                if (isGameFinished)
+                  WinnerWidget(
+                    listOfWinner: listOfWinner,
+                  )
+                else
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Column(
+                        children: [
+                          const Text("Team A"),
+                          ...teamA.map(
+                            (e) => TeamWarriorWidget(
+                              warrior: e,
+                              colorTeam: const Color.fromRGBO(217, 217, 217, 1),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    const Text("Team B"),
-                    ...teamB.map(
-                      (e) => TeamWarriorWidget(
-                        warrior: e,
-                        colorTeam: const Color.fromRGBO(254, 214, 214, 1),
+                      Column(
+                        children: [
+                          const Text("Team B"),
+                          ...teamB.map(
+                            (e) => TeamWarriorWidget(
+                              warrior: e,
+                              colorTeam: const Color.fromRGBO(254, 214, 214, 1),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                const SizedBox(
+                  height: 20,
                 ),
+                if (!isGameFinished) const Text("The battle in progress..."),
+                const SizedBox(
+                  height: 10,
+                ),
+                if (listOfLoser.isNotEmpty)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("Dead warriors:"),
+                      ...listOfLoser.map(
+                        (e) => TeamWarriorWidget(
+                          warrior: e,
+                          colorTeam: e.team == "Team A"
+                              ? const Color.fromRGBO(217, 217, 217, 1)
+                              : const Color.fromRGBO(254, 214, 214, 1),
+                        ),
+                      ),
+                    ],
+                  ),
               ],
             ),
-            const SizedBox(
-              height: 50,
-            ),
-            if (isGameFinished)
-              TextButton(onPressed: () {}, child: Text("Restart"))
-            else
-              const Text("The battle in progress..."),
-            if (listOfLoser.isNotEmpty)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("Fucking noobs, loosers"),
-                  ...listOfLoser.map(
-                    (e) => TeamWarriorWidget(
-                      warrior: e,
-                      colorTeam: const Color.fromRGBO(217, 217, 217, 1),
-                    ),
-                  ),
-                ],
-              ),
-          ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+class WinnerWidget extends StatelessWidget {
+  final List<Warrior> listOfWinner;
+  const WinnerWidget({
+    super.key,
+    required this.listOfWinner,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    void navigateToPreparingBattle() {
+      final navigator = Navigator.of(context);
+      navigator.pushReplacement(
+          MaterialPageRoute(builder: (_) => const FirstPage()));
+    }
+
+    return Column(
+      children: [
+        Column(
+          children: [
+            Text(
+                "The winner is ${listOfWinner[0].name} from ${listOfWinner[0].team}"),
+            TeamWarriorWidget(
+              warrior: listOfWinner[0],
+              colorTeam: listOfWinner[0].team == "Team A"
+                  ? const Color.fromRGBO(217, 217, 217, 1)
+                  : const Color.fromRGBO(254, 214, 214, 1),
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        TextButton(
+          style: ButtonStyle(
+            minimumSize: MaterialStateProperty.all(const Size(300, 20)),
+            padding: MaterialStateProperty.all(const EdgeInsets.all(20.0)),
+            foregroundColor: MaterialStateProperty.all(Colors.black),
+            shape: MaterialStateProperty.all(
+              RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: const BorderSide(
+                    color: Colors.black,
+                  )),
+            ),
+          ),
+          onPressed: navigateToPreparingBattle,
+          child: const Text("Play again?"),
+        ),
+      ],
     );
   }
 }
