@@ -35,7 +35,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
           BottomNavigationBarItem(
               icon: Icon(Icons.filter_2), label: "Second page"),
           BottomNavigationBarItem(
-              icon: Icon(Icons.filter_3), label: "Third page"),
+              icon: Icon(Icons.filter_3), label: "Profile"),
         ],
         onTap: onTap,
         currentIndex: currentIndex,
