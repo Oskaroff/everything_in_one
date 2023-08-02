@@ -1,22 +1,53 @@
-import 'package:everything_in_one/pages/third_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-class PersonalInformationWidget extends StatelessWidget {
-  const PersonalInformationWidget({super.key});
+import '../model/personal_state.dart';
 
-  void navigateToThirdPage(BuildContext context) {
-    final navigator = Navigator.of(context);
-    navigator.pushReplacement(
-      MaterialPageRoute(
-        builder: (BuildContext context) => const ThirdPage(),
-      ),
-    );
+class PersonalInformationWidget extends StatefulWidget {
+  final PersonalState state;
+  final VoidCallback? onPressed;
+  const PersonalInformationWidget({
+    super.key,
+    required this.state,
+    required this.onPressed,
+  });
+
+  @override
+  State<PersonalInformationWidget> createState() =>
+      _PersonalInformationWidgetState();
+}
+
+class _PersonalInformationWidgetState extends State<PersonalInformationWidget> {
+  final genderSelectList = ["Male", "Female"];
+  String? selectedVal = "Male";
+
+  final controllerFirstName = TextEditingController();
+  final controllerlastName = TextEditingController();
+  final controllerPhoneNumber = TextEditingController();
+  final controllerGender = TextEditingController();
+
+  firstNameChange(String text) {
+    widget.state.firstName = controllerFirstName.text;
+    setState(() {});
+  }
+
+  lastNameChange(String text) {
+    widget.state.lastName = controllerlastName.text;
+    setState(() {});
+  }
+
+  phoneNumberChange(String text) {
+    widget.state.phoneNumber = controllerPhoneNumber.text;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
+    controllerFirstName.text = widget.state.firstName;
+    controllerlastName.text = widget.state.lastName;
+    controllerPhoneNumber.text = widget.state.phoneNumber;
+
     return Scaffold(
-      // backgroundColor: const Color.fromARGB(255, 223, 223, 223),
       appBar: AppBar(
         leading: BackButton(
           color: Colors.black,
@@ -43,16 +74,21 @@ class PersonalInformationWidget extends StatelessWidget {
                   Icons.account_circle_rounded,
                   size: 80,
                 ),
-                const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Text("Yurii Kutenko"),
+                Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(
+                    "${widget.state.firstName} ${widget.state.lastName}",
+                  ),
                 ),
                 const Text("yurakutenko@gmail.com"),
                 const SizedBox(
                   height: 30,
                 ),
-                const TextField(
-                  decoration: InputDecoration(
+                TextField(
+                  controller: controllerFirstName,
+                  onSubmitted: firstNameChange,
+                  onEditingComplete: widget.onPressed,
+                  decoration: const InputDecoration(
                     // Высота Labela
                     // isCollapsed: true,
                     // contentPadding: EdgeInsets.all(15),
@@ -70,8 +106,11 @@ class PersonalInformationWidget extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                const TextField(
-                  decoration: InputDecoration(
+                TextField(
+                  controller: controllerlastName,
+                  onSubmitted: lastNameChange,
+                  onEditingComplete: widget.onPressed,
+                  decoration: const InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
                     hintText: "And your last name?",
@@ -86,8 +125,12 @@ class PersonalInformationWidget extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                const TextField(
-                  decoration: InputDecoration(
+                TextField(
+                  keyboardType: TextInputType.phone,
+                  controller: controllerPhoneNumber,
+                  onSubmitted: phoneNumberChange,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: const InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
                     prefixIcon: Icon(Icons.phone),
@@ -103,12 +146,11 @@ class PersonalInformationWidget extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                const TextField(
-                  decoration: InputDecoration(
+                DropdownButtonFormField(
+                  decoration: const InputDecoration(
+                    labelText: "Select your gender",
                     filled: true,
                     fillColor: Colors.white,
-                    suffixIcon: Icon(Icons.expand_more),
-                    hintText: "Select your gender",
                     border: OutlineInputBorder(),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
@@ -116,6 +158,19 @@ class PersonalInformationWidget extends StatelessWidget {
                       ),
                     ),
                   ),
+                  value: selectedVal,
+                  items: genderSelectList
+                      .map((e) => DropdownMenuItem(
+                            child: Text(e),
+                            value: e,
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    setState(() {
+                      // widget.state.gender = value as String;
+                      selectedVal = value;
+                    });
+                  },
                 ),
                 const SizedBox(
                   height: 20,

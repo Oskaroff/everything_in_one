@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../model/personal_state.dart';
 import '../widget/personal_info.dart';
 
 class ThirdPage extends StatefulWidget {
@@ -10,6 +11,18 @@ class ThirdPage extends StatefulWidget {
 }
 
 class _ThirdPageState extends State<ThirdPage> {
+  late PersonalState state;
+
+  @override
+  void initState() {
+    super.initState();
+    state = PersonalState();
+  }
+
+  void onPressed() {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,8 +33,8 @@ class _ThirdPageState extends State<ThirdPage> {
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Padding(
+              children: [
+                const Padding(
                   padding: EdgeInsets.only(
                     top: 10,
                     bottom: 10,
@@ -34,9 +47,16 @@ class _ThirdPageState extends State<ThirdPage> {
                     ),
                   ),
                 ),
-                ProfileWidget(),
-                AccountWidget(),
-                Padding(
+                ProfileWidget(
+                  state: state,
+                  onPressed: () {
+                    onPressed();
+                  },
+                ),
+                AccountWidget(
+                  state: state,
+                ),
+                const Padding(
                   padding: EdgeInsets.only(
                     top: 10,
                     bottom: 10,
@@ -59,21 +79,23 @@ class _ThirdPageState extends State<ThirdPage> {
   }
 }
 
-class ProfileWidget extends StatefulWidget {
+class ProfileWidget extends StatelessWidget {
+  final PersonalState state;
+  final VoidCallback? onPressed;
   const ProfileWidget({
+    required this.state,
+    required this.onPressed,
     Key? key,
   }) : super(key: key);
 
-  @override
-  State<ProfileWidget> createState() => _ProfileWidgetState();
-}
-
-class _ProfileWidgetState extends State<ProfileWidget> {
-  void navigateToPersonalInfo() {
+  void navigateToPersonalInfo(BuildContext context) {
     final navigator = Navigator.of(context);
     navigator.push(
       MaterialPageRoute(
-        builder: (BuildContext context) => const PersonalInformationWidget(),
+        builder: (BuildContext context) => PersonalInformationWidget(
+          state: state,
+          onPressed: onPressed,
+        ),
       ),
     );
   }
@@ -88,9 +110,9 @@ class _ProfileWidgetState extends State<ProfileWidget> {
       color: const Color.fromARGB(255, 15, 100, 170),
       child: ListTile(
         contentPadding: const EdgeInsets.all(10),
-        title: const Padding(
-          padding: EdgeInsets.only(bottom: 10.0),
-          child: Text("Yurii Kutenko"),
+        title: Padding(
+          padding: const EdgeInsets.only(bottom: 10.0),
+          child: Text("${state.firstName} ${state.lastName}"),
         ),
         subtitle: const Text("yurakutenko@gmail.com"),
         iconColor: Colors.white,
@@ -105,7 +127,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             size: 25,
             color: Colors.white,
           ),
-          onPressed: navigateToPersonalInfo,
+          onPressed: () => navigateToPersonalInfo(context),
         ),
       ),
     );
@@ -113,7 +135,9 @@ class _ProfileWidgetState extends State<ProfileWidget> {
 }
 
 class AccountWidget extends StatefulWidget {
-  const AccountWidget({
+  late PersonalState state;
+  AccountWidget({
+    required this.state,
     Key? key,
   }) : super(key: key);
 
@@ -122,7 +146,6 @@ class AccountWidget extends StatefulWidget {
 }
 
 class _AccountWidgetState extends State<AccountWidget> {
-  bool _isActive = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -187,10 +210,10 @@ class _AccountWidgetState extends State<AccountWidget> {
               Icons.lock_outline,
               size: 50,
             ),
-            value: _isActive,
+            value: widget.state.isActive,
             onChanged: (value) {
               setState(() {
-                _isActive = value;
+                widget.state.isActive = value;
               });
             },
           ),
