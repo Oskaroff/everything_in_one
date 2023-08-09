@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-import '../model/personal_state.dart';
+import 'package:intl/intl.dart';
+import 'package:everything_in_one/model/personal_state.dart';
 
 class PersonalInformationWidget extends StatefulWidget {
   final PersonalState state;
   final VoidCallback? onPressed;
+
   const PersonalInformationWidget({
     super.key,
     required this.state,
@@ -18,27 +19,42 @@ class PersonalInformationWidget extends StatefulWidget {
 }
 
 class _PersonalInformationWidgetState extends State<PersonalInformationWidget> {
+  _PersonalInformationWidgetState() {
+    selectedGender = genderSelectList[0];
+  }
+
   final genderSelectList = ["Male", "Female"];
-  String? selectedVal = "Male";
+  String? selectedGender = "";
 
   final controllerFirstName = TextEditingController();
   final controllerlastName = TextEditingController();
   final controllerPhoneNumber = TextEditingController();
   final controllerGender = TextEditingController();
+  final controllerMail = TextEditingController();
+  final controllerDate = TextEditingController();
 
-  firstNameChange(String text) {
-    widget.state.firstName = controllerFirstName.text;
-    setState(() {});
+  void _showDatePicker() async {
+    DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1930),
+        lastDate: DateTime(2025));
+
+    if (pickedDate != null) {
+      controllerDate.text = DateFormat('dd-MM-yyyy').format(pickedDate);
+    }
   }
 
-  lastNameChange(String text) {
-    widget.state.lastName = controllerlastName.text;
-    setState(() {});
-  }
-
-  phoneNumberChange(String text) {
-    widget.state.phoneNumber = controllerPhoneNumber.text;
-    setState(() {});
+  void _profileUpdate() {
+    setState(() {
+      widget.state.firstName = controllerFirstName.text;
+      widget.state.lastName = controllerlastName.text;
+      widget.state.phoneNumber = controllerPhoneNumber.text;
+      widget.state.mail = controllerMail.text;
+      widget.state.gender = controllerGender.text;
+      widget.state.date = controllerDate.text;
+      widget.onPressed!();
+    });
   }
 
   @override
@@ -46,12 +62,13 @@ class _PersonalInformationWidgetState extends State<PersonalInformationWidget> {
     controllerFirstName.text = widget.state.firstName;
     controllerlastName.text = widget.state.lastName;
     controllerPhoneNumber.text = widget.state.phoneNumber;
+    controllerMail.text = widget.state.mail;
+    controllerDate.text = widget.state.date;
 
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
           color: Colors.black,
-          // onPressed: () => navigateToThirdPage(context),
           onPressed: Navigator.of(context).pop,
         ),
         title: const Text(
@@ -80,21 +97,16 @@ class _PersonalInformationWidgetState extends State<PersonalInformationWidget> {
                     "${widget.state.firstName} ${widget.state.lastName}",
                   ),
                 ),
-                const Text("yurakutenko@gmail.com"),
+                Text(widget.state.mail),
                 const SizedBox(
                   height: 30,
                 ),
                 TextField(
                   controller: controllerFirstName,
-                  onSubmitted: firstNameChange,
-                  onEditingComplete: widget.onPressed,
                   decoration: const InputDecoration(
-                    // Высота Labela
-                    // isCollapsed: true,
-                    // contentPadding: EdgeInsets.all(15),
                     filled: true,
                     fillColor: Colors.white,
-                    hintText: "What's your first name?",
+                    labelText: "What's your first name?",
                     border: OutlineInputBorder(),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
@@ -104,16 +116,14 @@ class _PersonalInformationWidgetState extends State<PersonalInformationWidget> {
                   ),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 25,
                 ),
                 TextField(
                   controller: controllerlastName,
-                  onSubmitted: lastNameChange,
-                  onEditingComplete: widget.onPressed,
                   decoration: const InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
-                    hintText: "And your last name?",
+                    labelText: "And your last name?",
                     border: OutlineInputBorder(),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
@@ -123,18 +133,17 @@ class _PersonalInformationWidgetState extends State<PersonalInformationWidget> {
                   ),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 25,
                 ),
                 TextField(
                   keyboardType: TextInputType.phone,
                   controller: controllerPhoneNumber,
-                  onSubmitted: phoneNumberChange,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: const InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
                     prefixIcon: Icon(Icons.phone),
-                    hintText: "Phone number",
+                    labelText: "Phone number",
                     border: OutlineInputBorder(),
                     enabledBorder: OutlineInputBorder(
                       borderSide: BorderSide(
@@ -144,7 +153,24 @@ class _PersonalInformationWidgetState extends State<PersonalInformationWidget> {
                   ),
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 25,
+                ),
+                TextField(
+                  controller: controllerMail,
+                  decoration: const InputDecoration(
+                    filled: true,
+                    fillColor: Colors.white,
+                    labelText: "Your mail",
+                    border: OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        style: BorderStyle.none,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 25,
                 ),
                 DropdownButtonFormField(
                   decoration: const InputDecoration(
@@ -158,25 +184,22 @@ class _PersonalInformationWidgetState extends State<PersonalInformationWidget> {
                       ),
                     ),
                   ),
-                  value: selectedVal,
+                  value: selectedGender,
                   items: genderSelectList
                       .map((e) => DropdownMenuItem(
-                            child: Text(e),
                             value: e,
+                            child: Text(e),
                           ))
                       .toList(),
                   onChanged: (value) {
                     setState(() {
-                      // widget.state.gender = value as String;
-                      selectedVal = value;
+                      selectedGender = value;
                     });
                   },
                 ),
-                const SizedBox(
-                  height: 20,
-                ),
-                const TextField(
-                  decoration: InputDecoration(
+                TextField(
+                  controller: controllerDate,
+                  decoration: const InputDecoration(
                     filled: true,
                     fillColor: Colors.white,
                     suffixIcon: Icon(Icons.event_note),
@@ -188,9 +211,10 @@ class _PersonalInformationWidgetState extends State<PersonalInformationWidget> {
                       ),
                     ),
                   ),
+                  onTap: _showDatePicker,
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 25,
                 ),
                 TextButton(
                   style: ButtonStyle(
@@ -206,7 +230,7 @@ class _PersonalInformationWidgetState extends State<PersonalInformationWidget> {
                       ),
                     ),
                   ),
-                  onPressed: null,
+                  onPressed: _profileUpdate,
                   child: const Text("Update Profile?"),
                 ),
               ],

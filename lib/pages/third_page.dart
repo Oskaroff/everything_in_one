@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../model/personal_state.dart';
-import '../widget/personal_info.dart';
+import 'package:everything_in_one/model/personal_state.dart';
+import 'package:everything_in_one/widget/personal_info.dart';
 
 class ThirdPage extends StatefulWidget {
   const ThirdPage({super.key});
@@ -17,10 +17,6 @@ class _ThirdPageState extends State<ThirdPage> {
   void initState() {
     super.initState();
     state = PersonalState();
-  }
-
-  void onPressed() {
-    setState(() {});
   }
 
   @override
@@ -50,7 +46,7 @@ class _ThirdPageState extends State<ThirdPage> {
                 ProfileWidget(
                   state: state,
                   onPressed: () {
-                    onPressed();
+                    setState(() {});
                   },
                 ),
                 AccountWidget(
@@ -69,7 +65,7 @@ class _ThirdPageState extends State<ThirdPage> {
                     ),
                   ),
                 ),
-                AboutAndSupportWidget(),
+                const AboutAndSupportWidget(),
               ],
             ),
           ),
@@ -82,13 +78,14 @@ class _ThirdPageState extends State<ThirdPage> {
 class ProfileWidget extends StatelessWidget {
   final PersonalState state;
   final VoidCallback? onPressed;
+
   const ProfileWidget({
     required this.state,
     required this.onPressed,
     Key? key,
   }) : super(key: key);
 
-  void navigateToPersonalInfo(BuildContext context) {
+  void _navigateToPersonalInfo(BuildContext context) {
     final navigator = Navigator.of(context);
     navigator.push(
       MaterialPageRoute(
@@ -114,7 +111,7 @@ class ProfileWidget extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 10.0),
           child: Text("${state.firstName} ${state.lastName}"),
         ),
-        subtitle: const Text("yurakutenko@gmail.com"),
+        subtitle: Text(state.mail),
         iconColor: Colors.white,
         textColor: Colors.white,
         leading: const Icon(
@@ -127,7 +124,7 @@ class ProfileWidget extends StatelessWidget {
             size: 25,
             color: Colors.white,
           ),
-          onPressed: () => navigateToPersonalInfo(context),
+          onPressed: () => _navigateToPersonalInfo(context),
         ),
       ),
     );
@@ -157,7 +154,6 @@ class _AccountWidgetState extends State<AccountWidget> {
       ),
       margin: const EdgeInsets.only(top: 20),
       child: Column(
-        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const ListTile(
             contentPadding: EdgeInsets.all(10),

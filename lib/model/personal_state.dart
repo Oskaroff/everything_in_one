@@ -3,5 +3,7 @@ class PersonalState {
   String lastName = "Izmailov";
   bool isActive = false;
   String phoneNumber = "";
-  String gender = "";
+  String gender = "TEST";
+  String mail = "yurakutenko@gmail.com";
+  String date = "";
 }
