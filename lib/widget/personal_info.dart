@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class PersonalInformationWidget extends StatelessWidget {
   const PersonalInformationWidget({super.key});
 
+<<<<<<< Updated upstream
   void navigateToThirdPage(BuildContext context) {
     final navigator = Navigator.of(context);
     navigator.pushReplacement(
@@ -11,6 +12,60 @@ class PersonalInformationWidget extends StatelessWidget {
         builder: (BuildContext context) => const ThirdPage(),
       ),
     );
+=======
+  const PersonalInformationWidget({
+    super.key,
+    required this.onPressed,
+  });
+
+  @override
+  State<PersonalInformationWidget> createState() =>
+      _PersonalInformationWidgetState();
+}
+
+class _PersonalInformationWidgetState extends State<PersonalInformationWidget> {
+  var selectedGender = globalPersonalState.gender;
+
+  final controllerFirstName = TextEditingController();
+  final controllerlastName = TextEditingController();
+  final controllerPhoneNumber = TextEditingController();
+  final controllerMail = TextEditingController();
+  final controllerDate = TextEditingController();
+
+  void _showDatePicker() async {
+    DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1930),
+        lastDate: DateTime.now());
+
+    if (pickedDate != null) {
+      controllerDate.text = DateFormat('dd-MM-yyyy').format(pickedDate);
+    }
+  }
+
+  void _profileUpdate() {
+    // TODO: read about cascade operators
+    globalPersonalState
+      ..firstName = controllerFirstName.text
+      ..lastName = controllerlastName.text
+      ..phoneNumber = controllerPhoneNumber.text
+      ..mail = controllerMail.text
+      ..gender = selectedGender
+      ..date = controllerDate.text;
+    widget.onPressed();
+    Navigator.of(context).pop();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    controllerFirstName.text = globalPersonalState.firstName;
+    controllerlastName.text = globalPersonalState.lastName;
+    controllerPhoneNumber.text = globalPersonalState.phoneNumber;
+    controllerMail.text = globalPersonalState.mail;
+    controllerDate.text = globalPersonalState.date;
+>>>>>>> Stashed changes
   }
 
   @override
@@ -120,8 +175,42 @@ class PersonalInformationWidget extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
+<<<<<<< Updated upstream
                 const TextField(
                   decoration: InputDecoration(
+=======
+                DropdownButtonFormField(
+                  decoration: const InputDecoration(
+                    labelText: "Select your gender",
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        style: BorderStyle.none,
+                      ),
+                    ),
+                  ),
+                  value: selectedGender,
+                  items: genderSelectList
+                      .map((e) => DropdownMenuItem(
+                            value: e,
+                            child: Text(e),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        selectedGender = value;
+                      });
+                    }
+                  },
+                ),
+                TextField(
+                  keyboardType: TextInputType.none,
+                  controller: controllerDate,
+                  decoration: const InputDecoration(
+>>>>>>> Stashed changes
                     filled: true,
                     fillColor: Colors.white,
                     suffixIcon: Icon(Icons.event_note),
