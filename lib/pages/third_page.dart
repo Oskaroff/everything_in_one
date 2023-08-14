@@ -1,6 +1,10 @@
+import 'package:everything_in_one/model/personal_state.dart';
+import 'package:everything_in_one/widget/personal_info.dart';
 import 'package:flutter/material.dart';
 
-import '../widget/personal_info.dart';
+// TODO: read about global state and pattern SINGLETON
+//  Change PersonalState to be a singleton!
+final globalPersonalState = PersonalState();
 
 class ThirdPage extends StatefulWidget {
   const ThirdPage({super.key});
@@ -20,8 +24,8 @@ class _ThirdPageState extends State<ThirdPage> {
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Padding(
+              children: [
+                const Padding(
                   padding: EdgeInsets.only(
                     top: 10,
                     bottom: 10,
@@ -34,9 +38,13 @@ class _ThirdPageState extends State<ThirdPage> {
                     ),
                   ),
                 ),
-                ProfileWidget(),
-                AccountWidget(),
-                Padding(
+                ProfileWidget(
+                  onPressed: () {
+                    setState(() {});
+                  },
+                ),
+                const AccountWidget(),
+                const Padding(
                   padding: EdgeInsets.only(
                     top: 10,
                     bottom: 10,
@@ -49,7 +57,7 @@ class _ThirdPageState extends State<ThirdPage> {
                     ),
                   ),
                 ),
-                AboutAndSupportWidget(),
+                const AboutAndSupportWidget(),
               ],
             ),
           ),
@@ -59,21 +67,19 @@ class _ThirdPageState extends State<ThirdPage> {
   }
 }
 
-class ProfileWidget extends StatefulWidget {
+class ProfileWidget extends StatelessWidget {
+  final VoidCallback onPressed;
+
   const ProfileWidget({
+    required this.onPressed,
     Key? key,
   }) : super(key: key);
 
-  @override
-  State<ProfileWidget> createState() => _ProfileWidgetState();
-}
-
-class _ProfileWidgetState extends State<ProfileWidget> {
-  void navigateToPersonalInfo() {
+  void _navigateToPersonalInfo(BuildContext context) {
     final navigator = Navigator.of(context);
     navigator.push(
       MaterialPageRoute(
-        builder: (BuildContext context) => const PersonalInformationWidget(),
+        builder: (_) => PersonalInformationWidget(onPressed: onPressed),
       ),
     );
   }
@@ -88,11 +94,12 @@ class _ProfileWidgetState extends State<ProfileWidget> {
       color: const Color.fromARGB(255, 15, 100, 170),
       child: ListTile(
         contentPadding: const EdgeInsets.all(10),
-        title: const Padding(
-          padding: EdgeInsets.only(bottom: 10.0),
-          child: Text("Yurii Kutenko"),
+        title: Padding(
+          padding: const EdgeInsets.only(bottom: 10.0),
+          child: Text(
+              "${globalPersonalState.firstName} ${globalPersonalState.lastName}"),
         ),
-        subtitle: const Text("yurakutenko@gmail.com"),
+        subtitle: Text(globalPersonalState.mail),
         iconColor: Colors.white,
         textColor: Colors.white,
         leading: const Icon(
@@ -105,7 +112,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
             size: 25,
             color: Colors.white,
           ),
-          onPressed: navigateToPersonalInfo,
+          onPressed: () => _navigateToPersonalInfo(context),
         ),
       ),
     );
@@ -113,16 +120,13 @@ class _ProfileWidgetState extends State<ProfileWidget> {
 }
 
 class AccountWidget extends StatefulWidget {
-  const AccountWidget({
-    Key? key,
-  }) : super(key: key);
+  const AccountWidget({super.key});
 
   @override
   State<AccountWidget> createState() => _AccountWidgetState();
 }
 
 class _AccountWidgetState extends State<AccountWidget> {
-  bool _isActive = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -134,7 +138,6 @@ class _AccountWidgetState extends State<AccountWidget> {
       ),
       margin: const EdgeInsets.only(top: 20),
       child: Column(
-        // crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const ListTile(
             contentPadding: EdgeInsets.all(10),
@@ -187,10 +190,10 @@ class _AccountWidgetState extends State<AccountWidget> {
               Icons.lock_outline,
               size: 50,
             ),
-            value: _isActive,
+            value: globalPersonalState.isActive,
             onChanged: (value) {
               setState(() {
-                _isActive = value;
+                globalPersonalState.isActive = value;
               });
             },
           ),
@@ -241,9 +244,7 @@ class _AccountWidgetState extends State<AccountWidget> {
 }
 
 class AboutAndSupportWidget extends StatelessWidget {
-  const AboutAndSupportWidget({
-    Key? key,
-  }) : super(key: key);
+  const AboutAndSupportWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
