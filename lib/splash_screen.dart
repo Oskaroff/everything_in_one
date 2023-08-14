@@ -1,3 +1,4 @@
+import 'package:everything_in_one/pages/third_page.dart';
 import 'package:flutter/material.dart';
 
 import 'main_screen.dart';
@@ -17,6 +18,18 @@ class _SplashScreenWidgetState extends State<SplashScreenWidget> {
   }
 
   void _navigateToHome() async {
+    await Future.delayed(const Duration(seconds: 1));
+    // TODO: check this example how global state works
+    showBottomSheet(
+      context: context,
+      builder: (ctx) => Container(
+        color: Colors.yellow,
+        height: 300,
+        width: double.infinity,
+        child: Center(child: Text(globalPersonalState.firstName)),
+      ),
+    );
+
     await Future.delayed(const Duration(seconds: 3));
 
     final navigator = Navigator.of(context);

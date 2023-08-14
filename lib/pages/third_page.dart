@@ -1,7 +1,10 @@
-import 'package:flutter/material.dart';
-
 import 'package:everything_in_one/model/personal_state.dart';
 import 'package:everything_in_one/widget/personal_info.dart';
+import 'package:flutter/material.dart';
+
+// TODO: read about global state and pattern SINGLETON
+//  Change PersonalState to be a singleton!
+final globalPersonalState = PersonalState();
 
 class ThirdPage extends StatefulWidget {
   const ThirdPage({super.key});
@@ -11,14 +14,6 @@ class ThirdPage extends StatefulWidget {
 }
 
 class _ThirdPageState extends State<ThirdPage> {
-  late PersonalState state;
-
-  @override
-  void initState() {
-    super.initState();
-    state = PersonalState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,14 +39,11 @@ class _ThirdPageState extends State<ThirdPage> {
                   ),
                 ),
                 ProfileWidget(
-                  state: state,
                   onPressed: () {
                     setState(() {});
                   },
                 ),
-                AccountWidget(
-                  state: state,
-                ),
+                const AccountWidget(),
                 const Padding(
                   padding: EdgeInsets.only(
                     top: 10,
@@ -76,11 +68,9 @@ class _ThirdPageState extends State<ThirdPage> {
 }
 
 class ProfileWidget extends StatelessWidget {
-  final PersonalState state;
-  final VoidCallback? onPressed;
+  final VoidCallback onPressed;
 
   const ProfileWidget({
-    required this.state,
     required this.onPressed,
     Key? key,
   }) : super(key: key);
@@ -89,10 +79,7 @@ class ProfileWidget extends StatelessWidget {
     final navigator = Navigator.of(context);
     navigator.push(
       MaterialPageRoute(
-        builder: (BuildContext context) => PersonalInformationWidget(
-          state: state,
-          onPressed: onPressed,
-        ),
+        builder: (_) => PersonalInformationWidget(onPressed: onPressed),
       ),
     );
   }
@@ -109,9 +96,10 @@ class ProfileWidget extends StatelessWidget {
         contentPadding: const EdgeInsets.all(10),
         title: Padding(
           padding: const EdgeInsets.only(bottom: 10.0),
-          child: Text("${state.firstName} ${state.lastName}"),
+          child: Text(
+              "${globalPersonalState.firstName} ${globalPersonalState.lastName}"),
         ),
-        subtitle: Text(state.mail),
+        subtitle: Text(globalPersonalState.mail),
         iconColor: Colors.white,
         textColor: Colors.white,
         leading: const Icon(
@@ -132,11 +120,7 @@ class ProfileWidget extends StatelessWidget {
 }
 
 class AccountWidget extends StatefulWidget {
-  late PersonalState state;
-  AccountWidget({
-    required this.state,
-    Key? key,
-  }) : super(key: key);
+  const AccountWidget({super.key});
 
   @override
   State<AccountWidget> createState() => _AccountWidgetState();
@@ -206,10 +190,10 @@ class _AccountWidgetState extends State<AccountWidget> {
               Icons.lock_outline,
               size: 50,
             ),
-            value: widget.state.isActive,
+            value: globalPersonalState.isActive,
             onChanged: (value) {
               setState(() {
-                widget.state.isActive = value;
+                globalPersonalState.isActive = value;
               });
             },
           ),
@@ -260,9 +244,7 @@ class _AccountWidgetState extends State<AccountWidget> {
 }
 
 class AboutAndSupportWidget extends StatelessWidget {
-  const AboutAndSupportWidget({
-    Key? key,
-  }) : super(key: key);
+  const AboutAndSupportWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,15 +1,14 @@
+import 'package:everything_in_one/model/personal_state.dart';
+import 'package:everything_in_one/pages/third_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:everything_in_one/model/personal_state.dart';
 
 class PersonalInformationWidget extends StatefulWidget {
-  final PersonalState state;
-  final VoidCallback? onPressed;
+  final VoidCallback onPressed;
 
   const PersonalInformationWidget({
     super.key,
-    required this.state,
     required this.onPressed,
   });
 
@@ -19,17 +18,11 @@ class PersonalInformationWidget extends StatefulWidget {
 }
 
 class _PersonalInformationWidgetState extends State<PersonalInformationWidget> {
-  _PersonalInformationWidgetState() {
-    selectedGender = genderSelectList[0];
-  }
-
-  final genderSelectList = ["Male", "Female"];
-  String? selectedGender = "";
+  var selectedGender = globalPersonalState.gender;
 
   final controllerFirstName = TextEditingController();
   final controllerlastName = TextEditingController();
   final controllerPhoneNumber = TextEditingController();
-  final controllerGender = TextEditingController();
   final controllerMail = TextEditingController();
   final controllerDate = TextEditingController();
 
@@ -38,7 +31,7 @@ class _PersonalInformationWidgetState extends State<PersonalInformationWidget> {
         context: context,
         initialDate: DateTime.now(),
         firstDate: DateTime(1930),
-        lastDate: DateTime(2025));
+        lastDate: DateTime(2020));
 
     if (pickedDate != null) {
       controllerDate.text = DateFormat('dd-MM-yyyy').format(pickedDate);
@@ -46,25 +39,30 @@ class _PersonalInformationWidgetState extends State<PersonalInformationWidget> {
   }
 
   void _profileUpdate() {
-    setState(() {
-      widget.state.firstName = controllerFirstName.text;
-      widget.state.lastName = controllerlastName.text;
-      widget.state.phoneNumber = controllerPhoneNumber.text;
-      widget.state.mail = controllerMail.text;
-      widget.state.gender = controllerGender.text;
-      widget.state.date = controllerDate.text;
-      widget.onPressed!();
-    });
+    // TODO: read about cascade operators
+    globalPersonalState
+      ..firstName = controllerFirstName.text
+      ..lastName = controllerlastName.text
+      ..phoneNumber = controllerPhoneNumber.text
+      ..mail = controllerMail.text
+      ..gender = selectedGender
+      ..date = controllerDate.text;
+    widget.onPressed();
+    Navigator.of(context).pop();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    controllerFirstName.text = globalPersonalState.firstName;
+    controllerlastName.text = globalPersonalState.lastName;
+    controllerPhoneNumber.text = globalPersonalState.phoneNumber;
+    controllerMail.text = globalPersonalState.mail;
+    controllerDate.text = globalPersonalState.date;
   }
 
   @override
   Widget build(BuildContext context) {
-    controllerFirstName.text = widget.state.firstName;
-    controllerlastName.text = widget.state.lastName;
-    controllerPhoneNumber.text = widget.state.phoneNumber;
-    controllerMail.text = widget.state.mail;
-    controllerDate.text = widget.state.date;
-
     return Scaffold(
       appBar: AppBar(
         leading: BackButton(
@@ -94,10 +92,10 @@ class _PersonalInformationWidgetState extends State<PersonalInformationWidget> {
                 Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Text(
-                    "${widget.state.firstName} ${widget.state.lastName}",
+                    "${globalPersonalState.firstName} ${globalPersonalState.lastName}",
                   ),
                 ),
-                Text(widget.state.mail),
+                Text(globalPersonalState.mail),
                 const SizedBox(
                   height: 30,
                 ),
@@ -192,9 +190,11 @@ class _PersonalInformationWidgetState extends State<PersonalInformationWidget> {
                           ))
                       .toList(),
                   onChanged: (value) {
-                    setState(() {
-                      selectedGender = value;
-                    });
+                    if (value != null) {
+                      setState(() {
+                        selectedGender = value;
+                      });
+                    }
                   },
                 ),
                 TextField(
